@@ -1,0 +1,44 @@
+body {
+  background: #fff;
+  font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  min-height: 100vh;
+  background: #f6f7fb;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.MuiButton-root {
+  border-radius: 12px !important;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.MuiPaper-root {
+  border-radius: 16px !important;
+}
+
+.MuiDialog-paper {
+  border-radius: 16px !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #f6f7fb;
+}
+::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 8px;
+}
