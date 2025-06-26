@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Upload, Button, Image, Spin, message, Card, Row, Col, Space, Typography } from "antd";
+import { Upload, Button, Image, Spin, message, Card, Row, Col, Space, Typography, Modal, Form, InputNumber } from "antd";
 import { UploadOutlined, ScissorOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as bodyPix from '@tensorflow-models/body-pix';
 import '@tensorflow/tfjs';
@@ -12,6 +12,9 @@ function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modelReady, setModelReady] = useState(false);
+  const [resizeOpen, setResizeOpen] = useState(false);
+  const [resizeWidth, setResizeWidth] = useState();
+  const [resizeHeight, setResizeHeight] = useState();
   const netRef = useRef(null);
 
   useEffect(() => {
@@ -91,6 +94,27 @@ function App() {
     document.body.removeChild(a);
   };
 
+  // 调整尺寸处理
+  const handleResize = () => {
+    if (!resizeWidth || !resizeHeight) {
+      message.warning("请输入宽度和高度");
+      return;
+    }
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = resizeWidth;
+      canvas.height = resizeHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const url = canvas.toDataURL("image/png");
+      setResult(url);
+      setPreview(url);
+      setResizeOpen(false);
+    };
+    img.src = result || preview;
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -125,6 +149,13 @@ function App() {
             disabled={!preview || loading || !modelReady}
           >
             抠图去背景
+          </Button>
+          <Button
+            icon={<ScissorOutlined rotate={90} />}
+            onClick={() => setResizeOpen(true)}
+            disabled={!(result || preview)}
+          >
+            调整尺寸
           </Button>
           <Button
             icon={<DownloadOutlined />}
@@ -162,6 +193,24 @@ function App() {
             )
           )}
         </Card>
+        {/* 调整尺寸弹窗 */}
+        <Modal
+          title="调整图片尺寸"
+          open={resizeOpen}
+          onCancel={() => setResizeOpen(false)}
+          onOk={handleResize}
+          okText="确定"
+          cancelText="取消"
+        >
+          <Form layout="vertical">
+            <Form.Item label="宽度(px)">
+              <InputNumber min={1} value={resizeWidth} onChange={setResizeWidth} style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item label="高度(px)">
+              <InputNumber min={1} value={resizeHeight} onChange={setResizeHeight} style={{ width: "100%" }} />
+            </Form.Item>
+          </Form>
+        </Modal>
       </Card>
     </div>
   );
